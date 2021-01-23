@@ -1,4 +1,5 @@
-
+"""@brief A RGB keyboard interface for windows devices.
+"""
 from pywinusb import hid
 from time import sleep
 from ctypes import *
@@ -8,6 +9,8 @@ import colorsys
 
 
 class KeyboardMatrix():
+    """@brief A keyboard matrix class holding RGB values for all keys
+    """
     def __init__(self):
         self.red = [
             [0]*21,
@@ -35,7 +38,7 @@ class KeyboardMatrix():
         ]*6
 
 
-    def MakeKeyboardBuffer(self):
+    def make_keyboard_buffer(self):
         ret = []
 
         buf = b""
@@ -45,7 +48,7 @@ class KeyboardMatrix():
     
         return ret
 
-    def setKeyboardFlat(self, keyboard, r=None,g=None,b=None):
+    def set_keyboard_flat(self, keyboard, r=None,g=None,b=None):
 
         if(r):
             for i in range(6):
@@ -62,11 +65,11 @@ class KeyboardMatrix():
                 for j in range(21):
                     self.blue[i][j] = b
 
-        keyboard.send(modeToHIDBuf( mode=LightingMode.FLAT_COLOR,
+        keyboard.send(mode_to_hid_buf( mode=LightingMode.FLAT_COLOR,
                             speed=48,
                             brightness=48))
 
-        d = self.MakeKeyboardBuffer()
+        d = self.make_keyboard_buffer()
         #print(d)
         for i in range(6):
             keyboard.send(b"\x00\x16\x00" + bytes([i])  + b"\x00\x00\x00\x00\x00")
@@ -91,12 +94,12 @@ class LightingMode():
 
 
 
-def rgbToHIDBuf(r,g,b, id=1):
+def rgb_to_hid_buf(r,g,b, id=1):
     if(id>8):
         return False
     return b"\x00\x14\x00" + bytes([id,r,g,b]) + b"\x00\x00"
 
-def modeToHIDBuf(mode=b"\x00\x00", speed=0, brightness=32, a=0,rotation=0,c=0):
+def mode_to_hid_buf(mode=b"\x00\x00", speed=0, brightness=32, a=0,rotation=0,c=0):
     return b"\x00\x08\x02" + mode + bytes([speed,brightness,a,rotation,c])
 
 
@@ -106,7 +109,7 @@ class Controller:
         self.hid_devices = filter.get_devices()
         self.device = self.hid_devices[1]
         
-        self.hidDLL = WinDLL("hid")
+        self.hid_dll = WinDLL("hid")
         print("device: ")
         print(self.device)
         print(self.device.device_path)
@@ -134,17 +137,17 @@ class Controller:
         
 
     def send(self,data):
-        return self.hidDLL.HidD_SetFeature(int(self.device.hid_handle), create_string_buffer(data),len(data))
+        return self.hid_dll.HidD_SetFeature(int(self.device.hid_handle), create_string_buffer(data),len(data))
         
 
     def reset_colors(self):
-        self.send(rgbToHIDBuf(0xff, 0x00, 0x00, 1))
-        self.send(rgbToHIDBuf(0xff, 0x1e, 0x00, 2))
-        self.send(rgbToHIDBuf(0xff, 0x64, 0x00, 3))
-        self.send(rgbToHIDBuf(0x00, 0x64, 0x00, 4))
-        self.send(rgbToHIDBuf(0x00, 0x00, 0x50, 5))
-        self.send(rgbToHIDBuf(0x00, 0x64, 0x00, 6))
-        self.send(rgbToHIDBuf(0xff, 0x00, 0x50, 7))
+        self.send(rgb_to_hid_buf(0xff, 0x00, 0x00, 1))
+        self.send(rgb_to_hid_buf(0xff, 0x1e, 0x00, 2))
+        self.send(rgb_to_hid_buf(0xff, 0x64, 0x00, 3))
+        self.send(rgb_to_hid_buf(0x00, 0x64, 0x00, 4))
+        self.send(rgb_to_hid_buf(0x00, 0x00, 0x50, 5))
+        self.send(rgb_to_hid_buf(0x00, 0x64, 0x00, 6))
+        self.send(rgb_to_hid_buf(0xff, 0x00, 0x50, 7))
 
 
     def rainbow_fade(self):
@@ -152,16 +155,16 @@ class Controller:
         kbcolors = KeyboardMatrix()
         while True:
             for g in range(0,0x1e):
-                kbcolors.setKeyboardFlat(keyboard, r=r, g=g, b=b)
+                kbcolors.set_keyboard_flat(keyboard, r=r, g=g, b=b)
             for g in range(0x1e, 0x50):
-                kbcolors.setKeyboardFlat(keyboard, r=r, g=g, b=b)
+                kbcolors.set_keyboard_flat(keyboard, r=r, g=g, b=b)
             for r in range(0xff, 0x00, -1):
-                kbcolors.setKeyboardFlat(keyboard, r=r, g=g, b=b)
+                kbcolors.set_keyboard_flat(keyboard, r=r, g=g, b=b)
             for b in range(0x00, 0x50):
-                kbcolors.setKeyboardFlat(keyboard, r=r, g=g-b, b=b)
+                kbcolors.set_keyboard_flat(keyboard, r=r, g=g-b, b=b)
             g=0
             for r in range(0x00, 0xff):
-                kbcolors.setKeyboardFlat(keyboard, r=r, g=g, b=b)
+                kbcolors.set_keyboard_flat(keyboard, r=r, g=g, b=b)
             for b in range(0x50, 0x00, -1):
-                kbcolors.setKeyboardFlat(keyboard, r=r, g=g, b=b)
+                kbcolors.set_keyboard_flat(keyboard, r=r, g=g, b=b)
  
