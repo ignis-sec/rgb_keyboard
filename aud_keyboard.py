@@ -1,10 +1,9 @@
-from keyboardcontroller import Controller,rgbToHIDBuf,modeToHIDBuf,LightingMode,KeyboardMatrix
-from time import sleep
-from random import randint,uniform
-from ..audio import AudioController
-from colors import hsv2rgb
+
 import math
 import asyncio
+
+from keyboard_controller import KeyboardHIDController,KeyboardMatrix
+from ..audio import AudioController
 
 class AudioVisualizer:
     """ Audio visualizer class for keyboard.
@@ -19,7 +18,7 @@ class AudioVisualizer:
         """
 
         self.kbcolors = KeyboardMatrix()
-        self.keyboard = Controller()
+        self.keyboard = KeyboardHIDController()
         self.audio = AudioController()
 
         self.r=0
