@@ -142,3 +142,6 @@ cython_debug/
 documentation/m.css
 
 
+# built documentations
+documentation/xml/*
+documentation/html/*
