@@ -65,7 +65,7 @@ class AudioVisualizer:
 
 
 
-    async def changeColor(self,r,g,b):
+    async def change_color(self,r,g,b):
         self.r=r
         self.g=int(g*0.7)
         self.b=int(b*0.6)

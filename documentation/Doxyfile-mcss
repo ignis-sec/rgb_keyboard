@@ -1,0 +1,6 @@
+@INCLUDE                = doxyfile
+GENERATE_HTML           = NO
+GENERATE_XML            = YES
+XML_PROGRAMLISTING      = NO
+HTML_OUTPUT             = ./html  
+SHOW_INCLUDE_FILES      = NO
