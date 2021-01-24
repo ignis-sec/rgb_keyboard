@@ -5,7 +5,7 @@ A RGB keyboard interface for windows devices.
 from pywinusb import hid
 from ctypes import *
 
-from helpers import rgb_to_hid_buf
+from .helpers import rgb_to_hid_buf
 import allogate as logging
 
 class KeyboardHIDController:

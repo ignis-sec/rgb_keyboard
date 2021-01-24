@@ -1,7 +1,7 @@
 
 import math
 import asyncio
-from audio_loopback.audio_loopback import AudioController
+from .audio_loopback.audio_loopback import AudioController
 
 class AudioVisualizer:
     """ Audio visualizer class for keyboard.

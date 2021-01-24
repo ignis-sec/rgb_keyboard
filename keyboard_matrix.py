@@ -1,7 +1,7 @@
 
-from lighting_mode import LightingMode
-from helpers import mode_to_hid_buf
-from aud_keyboard import AudioVisualizer
+from .lighting_mode import LightingMode
+from .helpers import mode_to_hid_buf
+from .aud_keyboard import AudioVisualizer
 import allogate as logging
 
 class KeyboardMatrix():
@@ -44,12 +44,11 @@ class KeyboardMatrix():
         """
 
         ret = []
-        logging.pprint(f"Creating Keyboard RGB Matrix", 4)
+        logging.pprint(f"Creating Keyboard RGB Matrix", 5)
         # set 6x21 array for return buffer
         buf = b""
         for i in range(6):
             buf = b"\x00\x00" + bytes(self.blue[i]) + bytes(self.green[i]) + bytes(self.red[i])
-            logging.pprint(f"col {i}: {buf}", 4)
             ret.append(buf)
     
         return ret
@@ -68,22 +67,22 @@ class KeyboardMatrix():
         b"\\x00\\x16\\x12\\x00\\x00\\x08\\x01\\x00\\x00\\x00"
         """
 
-        logging.pprint(f"Setting flat color", 2)
+        logging.pprint(f"Setting flat color", 4)
         #set r/g/b values if specified
         if(r):
-            logging.pprint(f"Red color given, will fill the keyboard", 4)
+            logging.pprint(f"Red color given, will fill the keyboard", 5)
             for i in range(6):
                 for j in range(21):
                     self.red[i][j] = r
         
         if(g):
-            logging.pprint(f"Green color given, will fill the keyboard", 4)
+            logging.pprint(f"Green color given, will fill the keyboard", 5)
             for i in range(6):
                 for j in range(21):
                     self.green[i][j] = g
 
         if(b):
-            logging.pprint(f"Blue color given, will fill the keyboard", 4)
+            logging.pprint(f"Blue color given, will fill the keyboard", 5)
             for i in range(6):
                 for j in range(21):
                     self.blue[i][j] = b
@@ -96,6 +95,7 @@ class KeyboardMatrix():
 
         for i in range(6):
             self.keyboard.send(b"\x00\x16\x00" + bytes([i])  + b"\x00\x00\x00\x00\x00")
+            logging.pprint(f"col {i}: {d[i]}", 5)
             self.keyboard.output.send(d[i])
         
         #render colors
