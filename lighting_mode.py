@@ -12,3 +12,10 @@ class LightingMode():
     AURORA          = b"\x0e"
     FIRECRACKER     = b"\x11"
     FLAT_COLOR      = b"\x33"
+
+
+class ExtendedModes():
+    """ Custom coded effects, done with repeatedly setting flat colors
+    """
+    RAINBOW_FADE    = "rainbow_fade"
+    MUSIC           = "music_visualizer"
