@@ -1,7 +1,8 @@
 
 from lighting_mode import LightingMode
 from helpers import mode_to_hid_buf
-import logging
+from aud_keyboard import AudioVisualizer
+import allogate as logging
 
 class KeyboardMatrix():
     """A keyboard matrix class holding RGB values for all keys
@@ -109,7 +110,7 @@ class RGBRenderer(KeyboardMatrix):
     def __init__(self, keyboard):
         super().__init__(keyboard)
     
-    def rainbow_fade(self):
+    async def rainbow_fade(self, c):
         """ Rainbow Fade effect
         """
         logging.pprint(f"Starting rainbow fade effect.", 2)
@@ -131,3 +132,8 @@ class RGBRenderer(KeyboardMatrix):
                 self.set_keyboard_flat(r=r, g=g, b=b)
             for b in range(0x50, 0x00, -1):
                 self.set_keyboard_flat(r=r, g=g, b=b)
+
+    async def audio_visualizer(self, c):
+        visualizer = AudioVisualizer(self)
+        await visualizer.change_color(c[1], c[2], c[3])
+        await visualizer.visualize()

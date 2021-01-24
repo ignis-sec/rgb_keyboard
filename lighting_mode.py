@@ -18,4 +18,4 @@ class ExtendedModes():
     """ Custom coded effects, done with repeatedly setting flat colors
     """
     RAINBOW_FADE    = "rainbow_fade"
-    MUSIC           = "music_visualizer"
+    MUSIC           = "audio_visualizer"

@@ -1,0 +1,3 @@
+[submodule "audio_loopback"]
+	path = audio_loopback
+	url = https://github.com/FlameOfIgnis/audio_loopback

@@ -1,15 +1,13 @@
 
 import math
 import asyncio
-
-from keyboard_controller import KeyboardHIDController,KeyboardMatrix
-from ..audio import AudioController
+from audio_loopback.audio_loopback import AudioController
 
 class AudioVisualizer:
     """ Audio visualizer class for keyboard.
         convert audio data to Keyboard Matrix
     """
-    def __init__(self, threshold=1000, fade=0.8, delay=0.05, color_correction=(1,1,1)):
+    def __init__(self, Matrix, threshold=1000, fade=0.8, delay=0.05, color_correction=(1,1,1)):
         """
         @param threshold - Threshold to clamp audio data when reached. Maximum audio level from input.
         @param fade - fade constant, higher the value, longer the fade effect will last. Between 0-1
@@ -17,8 +15,7 @@ class AudioVisualizer:
         @param color_correction - Color correction for keyboard RGB values
         """
 
-        self.kbcolors = KeyboardMatrix()
-        self.keyboard = KeyboardHIDController()
+        self.kbcolors = Matrix
         self.audio = AudioController()
 
         self.r=0
@@ -30,11 +27,11 @@ class AudioVisualizer:
         self.delay = delay
         self.color_correction=color_correction
 
-    async def visualizeOnce(self):
+    def visualizeOnce(self):
         """ Visualize current levels of audio on the keyboard, and render it
         """
         #audio data from stream (after fft)
-        data = self.audio.readOnce()
+        data = self.audio.readOnce(25,20)
 
         #for each column of keyboard
         for i in range(len(self.kbcolors.red[0])):
@@ -68,13 +65,13 @@ class AudioVisualizer:
                     if self.kbcolors.blue[j][i] > self.g: self.kbcolors.blue[j][i]=self.g
             
         #render colors
-        self.kbcolors.setKeyboardFlat(self.keyboard)
+        self.kbcolors.set_keyboard_flat()
 
     async def visualize(self):
         """ Loop visualizeOnce infinitely
         """
         while True:
-            await self.visualizeOnce()
+            self.visualizeOnce()
             await asyncio.sleep(self.delay)
 
     async def change_color(self,r,g,b):

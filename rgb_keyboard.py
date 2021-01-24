@@ -7,9 +7,12 @@ from keyboard_controller import KeyboardHIDController
 from keyboard_matrix import KeyboardMatrix,RGBRenderer
 from lighting_mode import LightingMode,ExtendedModes
 from helpers import mode_to_hid_buf,rgb_to_hid_buf
-import logging
+import allogate as logging
+import asyncio
 
 def parseInputColor(c):
+    if not c:
+        return None
     if(len(c)==6):
         id = 0
         r = int(c[0:2],16)
@@ -28,8 +31,8 @@ def parseInputColor(c):
         logging.pprint(f"Could not parse color: {c}")
         exit(1)
 
-def runExtendedMode(renderer, mode):
-    getattr(RGBRenderer, mode)(renderer)
+def runExtendedMode(renderer, mode, color):
+    asyncio.run(getattr(RGBRenderer, mode)(renderer, color))
 
 def signal_handler(sig, frame):
     keyboard.send(mode_to_hid_buf(mode=LightingMode.FLAT_COLOR, speed=speed, brightness=brightness, rotation=rotation))
@@ -45,7 +48,7 @@ if __name__=="__main__":
     args = parser.parse_args() 
 
     if args.verbose:
-        logging.verbosity=int(args.verbose)
+        logging.VERBOSITY=int(args.verbose)
 
     keyboard =KeyboardHIDController()
     keyboard.reset_colors()
@@ -89,9 +92,16 @@ if __name__=="__main__":
                 logging.pprint("Invalid mode name")
                 exit(1)
 
+    
     if(extended_mode):
         renderer = RGBRenderer(keyboard)
-        runExtendedMode(renderer, extended_mode)
+        if(args.color):
+            c = parseInputColor(args.color)
+        else:
+            c = None
+        if not c:
+            c = (0,0xff,0x00,0x00)
+        runExtendedMode(renderer, extended_mode, c)
         
 
     elif(mode==LightingMode.FLAT_COLOR):
