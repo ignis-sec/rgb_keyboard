@@ -1,8 +1,6 @@
 
 from .rgb_keyboard import *
 
-def signal_handler(sig, frame):
-    keyboard.send(mode_to_hid_buf(mode=LightingMode.FLAT_COLOR, speed=speed, brightness=brightness, rotation=rotation))
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description='RGB Keyboard CLI')
