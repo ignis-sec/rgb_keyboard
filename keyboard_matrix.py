@@ -2,37 +2,10 @@
 from .lighting_mode import LightingMode
 from .helpers import mode_to_hid_buf
 from .aud_keyboard import AudioVisualizer
+from .audio_loopback.audio_visualizer import AudioVisualizer2D,ColorMatrix
 import allogate as logging
 
-class KeyboardMatrix():
-    """A keyboard matrix class holding RGB values for all keys
-    """
-    def __init__(self, keyboard):
-        self.red = [
-            [0]*21,
-            [0]*21,
-            [0]*21,
-            [0]*21,
-            [0]*21,
-            [0]*21
-        ]
-        self.green = [
-            [0]*21,
-            [0]*21,
-            [0]*21,
-            [0]*21,
-            [0]*21,
-            [0]*21
-        ]*6
-        self.blue = [
-            [0]*21,
-            [0]*21,
-            [0]*21,
-            [0]*21,
-            [0]*21,
-            [0]*21
-        ]*6
-        self.keyboard=keyboard
+class KeyboardMatrix(ColorMatrix):
 
     def make_keyboard_buffer(self):
         """Convert self.red, self.green and self.blue to keyboard buffer needed for interface
@@ -54,7 +27,7 @@ class KeyboardMatrix():
         return ret
 
     
-    def set_keyboard_flat(self, r=None,g=None,b=None):
+    def render(self, r=None,g=None,b=None):
         """Set keyboard to flat color.
         If either of r/g/b values are given, all the keys will be set to the same color. If not, stored colors will be used.
 
@@ -88,18 +61,18 @@ class KeyboardMatrix():
                     self.blue[i][j] = b
 
         #send set color request
-        self.keyboard.send(mode_to_hid_buf( mode=LightingMode.FLAT_COLOR, speed=48, brightness=48))
+        self.device.send(mode_to_hid_buf( mode=LightingMode.FLAT_COLOR, speed=48, brightness=48))
 
         #for each of the keyboard rows, send notification via feature request, and send the corresponding color data
         d = self.make_keyboard_buffer()
 
         for i in range(6):
-            self.keyboard.send(b"\x00\x16\x00" + bytes([i])  + b"\x00\x00\x00\x00\x00")
+            self.device.send(b"\x00\x16\x00" + bytes([i])  + b"\x00\x00\x00\x00\x00")
             logging.pprint(f"col {i}: {d[i]}", 5)
-            self.keyboard.output.send(d[i])
+            self.device.output.send(d[i])
         
         #render colors
-        self.keyboard.send(b"\x00\x16\x12\x00\x00\x08\x01\x00\x00\x00")
+        self.device.send(b"\x00\x16\x12\x00\x00\x08\x01\x00\x00\x00")
    
 
 
@@ -120,20 +93,20 @@ class RGBRenderer(KeyboardMatrix):
         b=0
         while True:
             for g in range(0,0x1e):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
             for g in range(0x1e, 0x50):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
             for r in range(0xff, 0x00, -1):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
             for b in range(0x00, 0x50):
-                self.set_keyboard_flat(r=r, g=g-b, b=b)
+                self.render(r=r, g=g-b, b=b)
             g=0
             for r in range(0x00, 0xff):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
             for b in range(0x50, 0x00, -1):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
 
     async def audio_visualizer(self, c):
-        visualizer = AudioVisualizer(self)
-        await visualizer.change_color(c[1], c[2], c[3])
+        visualizer = AudioVisualizer2D(self)
+        await visualizer.change_color(255,255,0)
         await visualizer.visualize()

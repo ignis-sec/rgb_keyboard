@@ -74,7 +74,7 @@ if __name__=="__main__":
         kbcolors = KeyboardMatrix(keyboard)
         if(args.color):
             id,r,g,b = parseInputColor(args.color)
-            kbcolors.set_keyboard_flat(r,g,b)
+            kbcolors.render(r,g,b)
         else:
             logging.pprint("Need color for flat colors.")
             exit(1)

@@ -63,4 +63,7 @@ class KeyboardHIDController:
         self.send(rgb_to_hid_buf(0x00, 0x00, 0x50, 5))
         self.send(rgb_to_hid_buf(0x00, 0x64, 0x00, 6))
         self.send(rgb_to_hid_buf(0xff, 0x00, 0x50, 7))
- 
+
+
+    def fade(self,r,g,b):
+        pass #stump

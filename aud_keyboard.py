@@ -6,9 +6,9 @@ from .audio_loopback.audio_loopback import AudioController
 
 class AudioVisualizer:
     """ Audio visualizer class for keyboard.
-        convert audio data to Keyboard Matrix
+        convert audio data to color_matrix
     """
-    def __init__(self, Matrix, ceiling=1220, fade=0.8, delay=0.05, color_correction=(1,1,1), ambient_glow=15, dampen=1000, dampen_bias=0.92, ceiling_bias=0.98):
+    def __init__(self, color_matrix, ceiling=1220, fade=0.8, delay=0.05, color_correction=(1,1,1), ambient_glow=15, dampen=1000, dampen_bias=0.92, ceiling_bias=0.98):
         """
         @param ceiling - Threshold to clamp audio data when reached. Maximum audio level from input.
         @param fade - fade constant, higher the value, longer the fade effect will last. Between 0-1
@@ -16,7 +16,7 @@ class AudioVisualizer:
         @param color_correction - Color correction for keyboard RGB values
         """
 
-        self.kbcolors = Matrix
+        self.color_matrix = color_matrix
         self.audio = AudioController()
 
         self.r=0
@@ -40,19 +40,19 @@ class AudioVisualizer:
         data = self.audio.readOnce(25,20)
 
         #for each column of keyboard
-        for i in range(len(self.kbcolors.red[0])):
+        for i in range(len(self.color_matrix.red[0])):
             for j in range(6):
 
                 #fade out old values
-                self.kbcolors.red[j][i]=math.floor(self.kbcolors.red[j][i]*self.fade)
-                self.kbcolors.green[j][i]=math.floor(self.kbcolors.green[j][i]*self.fade)
-                self.kbcolors.blue[j][i]=math.floor(self.kbcolors.blue[j][i]*self.fade)
+                self.color_matrix.red[j][i]=math.floor(self.color_matrix.red[j][i]*self.fade)
+                self.color_matrix.green[j][i]=math.floor(self.color_matrix.green[j][i]*self.fade)
+                self.color_matrix.blue[j][i]=math.floor(self.color_matrix.blue[j][i]*self.fade)
 
         #sanitize data, in case of -inf and division by zeroes
 
         current_dampening = self.dampen
         current_ceiling = self.ceiling    
-        for i in range(len(self.kbcolors.red[0])):
+        for i in range(len(self.color_matrix.red[0])):
             d = data[i]
             d = d - current_dampening
             if(d<self.ambient_glow): d=self.ambient_glow
@@ -67,18 +67,18 @@ class AudioVisualizer:
             current_ceiling = current_ceiling * self.ceiling_bias
             #depending on the fft level, rows for columns
             for j in range(d):
-                if self.kbcolors.red[j][i] <= self.r:
-                    self.kbcolors.red[j][i] += int(self.r * (1-self.fade))
-                    if self.kbcolors.red[j][i] > self.r: self.kbcolors.red[j][i]=self.r
-                if self.kbcolors.green[j][i] <= self.g: 
-                    self.kbcolors.green[j][i] += int(self.g * (1-self.fade))
-                    if self.kbcolors.green[j][i] > self.g: self.kbcolors.green[j][i]=self.g
-                if self.kbcolors.blue[j][i] <= self.b: 
-                    self.kbcolors.blue[j][i] += int(self.b * (1-self.fade))
-                    if self.kbcolors.blue[j][i] > self.g: self.kbcolors.blue[j][i]=self.g
+                if self.color_matrix.red[j][i] <= self.r:
+                    self.color_matrix.red[j][i] += int(self.r * (1-self.fade))
+                    if self.color_matrix.red[j][i] > self.r: self.color_matrix.red[j][i]=self.r
+                if self.color_matrix.green[j][i] <= self.g: 
+                    self.color_matrix.green[j][i] += int(self.g * (1-self.fade))
+                    if self.color_matrix.green[j][i] > self.g: self.color_matrix.green[j][i]=self.g
+                if self.color_matrix.blue[j][i] <= self.b: 
+                    self.color_matrix.blue[j][i] += int(self.b * (1-self.fade))
+                    if self.color_matrix.blue[j][i] > self.g: self.color_matrix.blue[j][i]=self.g
             
         #render colors
-        self.kbcolors.set_keyboard_flat()
+        self.color_matrix.render()
 
     async def visualize(self):
         """ Loop visualizeOnce infinitely

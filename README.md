@@ -69,18 +69,18 @@ def rainbow_fade(self):
         b=0
         while True:
             for g in range(0,0x1e):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
             for g in range(0x1e, 0x50):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
             for r in range(0xff, 0x00, -1):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
             for b in range(0x00, 0x50):
-                self.set_keyboard_flat(r=r, g=g-b, b=b)
+                self.render(r=r, g=g-b, b=b)
             g=0
             for r in range(0x00, 0xff):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
             for b in range(0x50, 0x00, -1):
-                self.set_keyboard_flat(r=r, g=g, b=b)
+                self.render(r=r, g=g, b=b)
 ```
 
 `python3 rgb_keyboard.py -m MUSIC`
@@ -88,7 +88,7 @@ def rainbow_fade(self):
 
 ## Adding New Effects
 
-Adding new effects are fairly easy. You just need to implement the animation of colors on `KeyboardMatrix`, and call `KeyboardMatrix.set_keyboard_flat()` for each frame.
+Adding new effects are fairly easy. You just need to implement the animation of colors on `KeyboardMatrix`, and call `KeyboardMatrix.render()` for each frame.
 
 Then, all you need to do is add your function name and identifier to `ExtendedModes` class in `lighting_modes.py`
 
