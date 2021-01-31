@@ -1,7 +1,7 @@
 
 from .lighting_mode import LightingMode
 from .helpers import mode_to_hid_buf
-from .aud_keyboard import AudioVisualizer
+from .aud_keyboard import KeyboardAudioVisualizer
 from .audio_loopback.audio_visualizer import AudioVisualizer2D,ColorMatrix
 import allogate as logging
 
@@ -107,6 +107,6 @@ class RGBRenderer(KeyboardMatrix):
                 self.render(r=r, g=g, b=b)
 
     async def audio_visualizer(self, c):
-        visualizer = AudioVisualizer2D(self)
+        visualizer = KeyboardAudioVisualizer(self)
         await visualizer.change_color(255,255,0)
         await visualizer.visualize()
